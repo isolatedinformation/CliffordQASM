@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+src/CliffordQASM/__init__.py
+src/CliffordQASM/cliffordT_converter.py
+src/CliffordQASM/qasm_parser.py
+src/CliffordQASM.egg-info/PKG-INFO
+src/CliffordQASM.egg-info/SOURCES.txt
+src/CliffordQASM.egg-info/dependency_links.txt
+src/CliffordQASM.egg-info/top_level.txt

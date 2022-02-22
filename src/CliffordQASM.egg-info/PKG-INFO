@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: CliffordQASM
+Version: 0.0.1
+Summary: A package to convert QASM circuits to only have Clifford+T Gates
+Home-page: https://github.com/pypa/sampleproject
+Author: Varun Seshadri
+Author-email: varunseshadri@gmail.com
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/pypa/sampleproject/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
+# CliffordT conversion of OpenQASM 3.0 Circuits
+
+### TODO:
+- [] Figure out setrup tools
+- 
+### Dependencies
+1. `newsynth` -- Haskell Package to convert Rz rotation to a sequence of H,S and T gates
+
