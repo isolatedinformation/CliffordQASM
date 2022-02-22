@@ -6,6 +6,7 @@ class QASMParser:
         with open("qasm_circuits/adder.qasm") as f:
             self.circuit_string = f.read()
 
+    @staticmethod
     def parse(s: str, strict: bool = True):
         lines = s.splitlines()
         r = []
