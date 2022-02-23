@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 import subprocess
-from turtle import st
 from typing import List
-from cirq import qasm
 import numpy as np
 from qasm_parser import QASMParser
 
@@ -18,9 +17,18 @@ def generate_clifford_T_approximation_from_rz_gate(angle: float):
     return clifford_sequence
 
 
+class ToCliffordGate:
+    """
+    Class to convert a Gate to convert to a Clifford Basis
+    """
+
+    def __init__(self) -> None:
+        pass
+
+
 class CliffordCircuitGenerator:
-    def __init__(self, input_qasm_str) -> None:
-        self.circuit: List[str] = input_qasm_str.splitlines()
+    def __init__(self, qasm_file: str = None) -> None:
+        self.circuit: List[str] = QASMParser(filepath=qasm_file)
         self.clifford_circuit: List[str] = []
 
     def _convert_ccz_to_cx(self):
@@ -30,5 +38,5 @@ class CliffordCircuitGenerator:
         pass
 
     def _generate_qasm_output(self):
-        for gate in self.circuit:
+        for instruction in self.circuit:
             pass

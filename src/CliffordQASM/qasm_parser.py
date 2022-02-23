@@ -1,13 +1,19 @@
 # import openqasm3
+from h11 import Data
+from qiskit.circuit import QuantumCircuit
+
+QuantumCircuit.from_qasm_file
 
 
 class QASMParser:
-    def __init__(self, filepath: str) -> None:
-        with open("qasm_circuits/adder.qasm") as f:
-            self.circuit_string = f.read()
+    def __init__(self, filepath: str = "qasm_circuits/qft.qasm") -> None:
+        with open(filepath) as f:
+            self.circuit_string = self._remove_comments_from_qasm_str(f.read())
 
-    @staticmethod
-    def parse(s: str, strict: bool = True):
+    def _remove_comments_from_qasm_str(self, s: str, strict: bool = True):
+        """
+        Function to break to down QASM file a list of strings of each line of the file
+        """
         lines = s.splitlines()
         r = []
         # remove comments
@@ -32,8 +38,23 @@ class QASMParser:
         elif strict:
             raise TypeError("File is not importing standard library")
 
-        data = "\n".join(r)
-        return data
+        return r
+
+    def _parse_standard_gates(self):
+        """
+        Internal method to gates that are available in `stdgates.inc`
+        """
+        pass
+
+    def _parse_custom_gate(self):
+        """
+        Internal method to parse gates that are created by the user.
+        """
+        pass
+
+    @staticmethod
+    def parse(self):
+        pass
 
 
 # def parse_custom_gate():
