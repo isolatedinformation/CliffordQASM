@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import List
 
+# TODO: Strength of truncation of string while using f-strings
+# Q: Would it better to use Fractions instead of floats for arbitrary precision?
+
 
 class AbstractGate:
     """
@@ -21,8 +24,13 @@ class SingleQubitGate(AbstractGate):
 
     gate_name: str = None
     qubit_register: str = None
-    gate_args: float = None
+    gate_args: float = None  # represents the denominator of the angle pi/gate_args
     num_qubit: int = 1
+
+    def to_qasm(self):
+        if self.gate_args is not None:
+            return f"{self.gate_name}({self.gate_args}) {self.qubit_register}"
+        return f"{self.gate_name} {self.qubit_register}"
 
 
 @dataclass
@@ -34,8 +42,18 @@ class TwoQubitGate(AbstractGate):
 
     gate_name: str = None
     qubit_register: List[str] = None
-    gate_args: float = None
+    gate_args: List[float] = None
     num_qubits: int = 2
+
+    def to_qasm(self):
+        if self.gate_args is not None:
+            args = ""
+            for arg in self.gate_args:
+                args.append(f"{arg}, ")
+            return (
+                f"{self.gate_name}({args[:-2]}) {self.qubit_register[0]}, {self.qubit_register[1]}"
+            )
+        return f"{self.gate_name} {self.qubit_register[0]}, {self.qubit_register[1]}"
 
 
 @dataclass
@@ -49,3 +67,15 @@ class MultiQubitGate(AbstractGate):
     qubit_register: List[str] = None
     gate_args: float = None
     num_qubits: int = len(qubit_register) if not qubit_register is None else None
+
+    def to_qasm(self):
+        qubits = ""
+        for qubit in self.qubit_register:
+            qubits.append(f"{qubit}, ")
+
+        if self.gate_args is not None:
+            args = ""
+            for arg in self.gate_args:
+                args.append(f"{arg}, ")
+            return f"{self.gate_name}({args[:-2]}) {qubits[:-2]}"
+        return f"{self.gate_name} {qubits[:-2]}"
