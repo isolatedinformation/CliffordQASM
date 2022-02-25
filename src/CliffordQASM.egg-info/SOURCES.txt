@@ -4,6 +4,7 @@ setup.cfg
 setup.py
 src/CliffordQASM/__init__.py
 src/CliffordQASM/cliffordT_converter.py
+src/CliffordQASM/gates.py
 src/CliffordQASM/qasm_parser.py
 src/CliffordQASM.egg-info/PKG-INFO
 src/CliffordQASM.egg-info/SOURCES.txt

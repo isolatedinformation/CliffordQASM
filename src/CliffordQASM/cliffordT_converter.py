@@ -1,20 +1,19 @@
-from dataclasses import dataclass
 import subprocess
 from typing import Dict, List, Tuple
 import numpy as np
 from CliffordQASM.gates import MultiQubitGate, SingleQubitGate, TwoQubitGate
-from qasm_parser import QASMParser
+from qasm_parser import GATES_TO_CONVERT
 
-RotationGates_to_Z_basis: Dict[str, Tuple[str]] = {
+ROTATION_GATES_T0_Z_BASIS: Dict[str, Tuple[str]] = {
     "RX": ["H", "RZ", "H"],
     "RY": ["S", "H", "RZ", "H", "Sdag"],
     "RZ": ["RZ"],
 }  # Need this for proper application of the gridsynth.
 
-Single_Qubit_CliffordT_Basis: Tuple = ("I", "X", "Y", "Z", "H", "S", "Sdag", "T")
-Two_Qubit_CliffordT_Basis: Tuple = ("CNOT",)
 
-single_qubit_gates_that_can_be_converted = ("RX", "RY", "RZ")
+SINGLE_QUBIT_CLIFFORDT_BASIS: Tuple = ("I", "X", "Y", "Z", "H", "S", "Sdag", "T")
+TWO_QUBIT_CLIFFORDT_BASIS: Tuple = ("CNOT", "CX", "CY", "CZ")
+GATES_THAT_CAN_BE_CONVERTED = ("RX", "RY", "RZ")
 
 
 def generate_clifford_T_approximation_from_rz_gate(angle: float) -> str:
@@ -36,23 +35,43 @@ def single_qubit_gate_to_CliffordT(gate: SingleQubitGate) -> List[SingleQubitGat
     if not isinstance(SingleQubitGate):
         raise TypeError("Please ensure gate is of type SingleQubitGate")
 
-    if gate.gate_name in Single_Qubit_CliffordT_Basis:
+    if gate.gate_name in SINGLE_QUBIT_CLIFFORDT_BASIS:
         return [gate]
 
-    if gate.gate_name not in single_qubit_gates_that_can_be_converted:
+    if gate.gate_name not in GATES_THAT_CAN_BE_CONVERTED:
         raise NotImplementedError("Custom gates are not supported yet!")
 
     new_gates = list()
 
-    for gate_name in RotationGates_to_Z_basis[gate.gate_name]:
+    for gate_name in ROTATION_GATES_T0_Z_BASIS[gate.gate_name]:
         if gate_name == "RZ":
-            for clifford in generate_clifford_T_approximation_from_rz_gate(gate.gate_args) 
+            for clifford in generate_clifford_T_approximation_from_rz_gate(gate.gate_args):
+                pass
 
 
 class CliffordInstructionGenerator:
+    """
+    Class to convert Non-Cliiford instructions as Sequence of Clifford Operations.
+    """
+
     def __init__(self, instruction: str = None) -> None:
-        self.instruction: str = instruction
-        self.clifford_circuit: List[str] = []
+        self.instruction: str = None
+        self.instruction_prefix: str = None
+        self.instruction_suffix: str = None
+        self._process_instruction(instruction)
+
+    def _process_instruction(self) -> None:
+        pass
+
+    def gate(self):
+        pass
+
+    def get_qasm_instructions(self) -> List[str]:
+        if not any(non_cliff in self.instruction for non_cliff in GATES_TO_CONVERT):
+            return [self.instruction]
+        else:
+            prefix = None
+            suffix = None
 
     def _convert_ccz_to_cx(self):
         pass

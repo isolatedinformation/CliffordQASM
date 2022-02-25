@@ -1,21 +1,32 @@
-from collections import deque
-from lib2to3.pytree import convert
-from operator import is_
-
 from CliffordQASM.cliffordT_converter import CliffordInstructionGenerator
 
-# Constant for the
-ignored_instructions = ["qubit", "bit", "reset", "barrier", "measure"]
-is_cliffordT = ["x", "y", "z", "h", "s", "sdg", "t", "tdg", "sx", "cx", "cy", "cz", "swap"]
-gates_to_be_converted = ["rx", "ry", "rz", "ccx"]
-gates_not_supported_yet = [
+# Constant for the list of gates supported
+IGNORED_INSTRUCTIONS = ["qubit", "bit", "reset", "barrier", "measure"]
+IS_CLIFFORDT = [
+    "x ",
+    "y ",
+    "z ",
+    "h ",
+    "s ",
+    "sdg ",
+    "t ",
+    "tdg ",
+    "sx ",
+    "cx ",
+    "cy ",
+    "cz ",
+    "swap ",
+]
+GATES_TO_CONVERT = ["rx(", "ry(", "rz(", "ccx ", "p("]
+GATES_NOT_SUPPORTED = [
+    "U",  # can be broken down into Clifford Gates
     "ch",  # not in CLifford
     "cswap",  # not in Clifford
     "cu",
     "crx",
     "cry",
     "crz",
-    "p",  # phase gate
+    "cphase",  # Controlled phase gate
 ]
 
 
@@ -24,7 +35,7 @@ class QASMParser:
     Class to Parse a QASM Circuit generating a circuit as a list of gate lines
     """
 
-    def __init__(self, filepath: str = "qasm_circuits/qft.qasm") -> None:
+    def __init__(self, filepath: str = "../../qasm_circuits/qft.qasm") -> None:
         with open(filepath) as f:
             self.circuit_string = self._remove_comments_from_qasm_str(f.read())
 
@@ -37,11 +48,15 @@ class QASMParser:
         # remove comments
         for s in lines:
             if s.find("//") != -1:
-                t = s[0 : s.find("//")].strip()
+                t = s[
+                    0 : s.find("//")
+                ]  # .strip() removing the strip operator so as to maintain identantion levels
             elif s.find("*") != -1:  # remove multi line comments
                 t = False
             else:
-                t = s.strip()
+                t = (
+                    s.strip()
+                )  # .strip() removing the strip operator so as to maintain identantion levels
             if t:
                 r.append(t)
 
@@ -65,11 +80,9 @@ class QASMParser:
         index = 0
         while index < len(self.circuit_string):
 
-            if any(non_cliff in self.circuit_string[index] for non_cliff in gates_to_be_converted):
+            if any(non_cliff in self.circuit_string[index] for non_cliff in GATES_TO_CONVERT):
                 # Condition to process supported gates that can be converted to the Clifford basis
-                new_lines = CliffordInstructionGenerator(
-                    self.circuit_string[index]
-                )  # make statement that generate line for this
+                new_lines = CliffordInstructionGenerator(self.circuit_string[index])
                 new_circuit.extend(new_lines)
                 index += 1
 
