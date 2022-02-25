@@ -1,11 +1,29 @@
-# import openqasm3
-from h11 import Data
-from qiskit.circuit import QuantumCircuit
+from collections import deque
+from lib2to3.pytree import convert
+from operator import is_
 
-QuantumCircuit.from_qasm_file
+from CliffordQASM.cliffordT_converter import CliffordInstructionGenerator
+
+# Constant for the
+ignored_instructions = ["qubit", "bit", "reset", "barrier", "measure"]
+is_cliffordT = ["x", "y", "z", "h", "s", "sdg", "t", "tdg", "sx", "cx", "cy", "cz", "swap"]
+gates_to_be_converted = ["rx", "ry", "rz", "ccx"]
+gates_not_supported_yet = [
+    "ch",  # not in CLifford
+    "cswap",  # not in Clifford
+    "cu",
+    "crx",
+    "cry",
+    "crz",
+    "p",  # phase gate
+]
 
 
 class QASMParser:
+    """
+    Class to Parse a QASM Circuit generating a circuit as a list of gate lines
+    """
+
     def __init__(self, filepath: str = "qasm_circuits/qft.qasm") -> None:
         with open(filepath) as f:
             self.circuit_string = self._remove_comments_from_qasm_str(f.read())
@@ -38,24 +56,55 @@ class QASMParser:
         elif strict:
             raise TypeError("File is not importing standard library")
 
-        return r
+        return r  # TODO: Detemine best data structure to represent this.
 
-    def _parse_standard_gates(self):
-        """
-        Internal method to gates that are available in `stdgates.inc`
-        """
-        pass
+    def generate_cliffordTCircuit(self):
+        new_circuit = list()
+        flag = False
 
-    def _parse_custom_gate(self):
-        """
-        Internal method to parse gates that are created by the user.
-        """
-        pass
+        index = 0
+        while index < len(self.circuit_string):
 
-    @staticmethod
-    def parse(self):
-        pass
+            if any(non_cliff in self.circuit_string[index] for non_cliff in gates_to_be_converted):
+                # Condition to process supported gates that can be converted to the Clifford basis
+                new_lines = CliffordInstructionGenerator(
+                    self.circuit_string[index]
+                )  # make statement that generate line for this
+                new_circuit.extend(new_lines)
+                index += 1
+
+            elif self.circuit_string[index].startswith("gate"):
+                # Parse custom gates and convert gates in the definition to Clifford+T basis
+                new_lines, new_index = self._parse_custom_gate(index)
+                new_circuit.append(self.circuit_string[index])
+
+            elif flag:
+                if "}" in self.circuit_string[index]:
+                    flag = False
+                new_circuit.append(self.circuit_string[index])
+            else:
+                new_circuit.append(self.circuit_string[index])
+
+            # elif any(ignored in line for ignored in ignored_instructions):
+            #     new_circuit.append(line)
+
+            # elif any(line.startswith(cliff) for cliff in is_cliffordT):
+            #     new_circuit.append(line)
+
+    def _parse_custom_gate(self, index):
+        custom_gate_as_clifford = list()
+        while "}" not in self.circuit_string[index]:  # Write string
+            # TODO: get instruction and change it to a multi line gate definition
+            new_lines = CliffordInstructionGenerator(
+                self.circuit_string[index]
+            )  # make statement that generate line for this
+            custom_gate_as_clifford.extend(new_lines)
+            index += 1
 
 
-# def parse_custom_gate():
-# # print(parse(circuit_string))
+# string.startswith(gate_name) is not a good check because the control flow statements
+# might make the gates start indented or deep in the string in case of single line for loops
+# the last check in generate_cliffordTCircuit might be useless. Find out what is required.
+# the flag check might also be irrelvant
+# are we also breaking down custom gates to clifford operations
+# would it make more sense loop with an index instead of an iterable.
