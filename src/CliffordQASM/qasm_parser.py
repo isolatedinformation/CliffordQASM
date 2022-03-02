@@ -1,3 +1,4 @@
+from email import generator
 from CliffordQASM.cliffordT_converter import CliffordInstructionGenerator
 
 # Constant for the list of gates supported
@@ -17,8 +18,9 @@ IS_CLIFFORDT = [
     "cz ",
     "swap ",
 ]
-GATES_TO_CONVERT = ["rx(", "ry(", "rz(", "ccx ", "p("]
+GATES_TO_CONVERT = ["rx(", "ry(", "rz(", "ccx "]
 GATES_NOT_SUPPORTED = [
+    "p(",
     "U",  # can be broken down into Clifford Gates
     "ch",  # not in CLifford
     "cswap",  # not in Clifford
@@ -36,6 +38,7 @@ class QASMParser:
     """
 
     def __init__(self, filepath: str = "../../qasm_circuits/qft.qasm") -> None:
+        self.fp = "cliffordT_qasm_circuits/" + "cliffordT_" + filepath[filepath.find("/") + 1 :]
         with open(filepath) as f:
             self.circuit_string = self._remove_comments_from_qasm_str(f.read())
 
@@ -60,12 +63,14 @@ class QASMParser:
 
         print(r[0])
         if r[0].startswith("OPENQASM"):
-            r.pop(0)
+            pass
+            # r.pop(0)
         elif strict:
             raise TypeError("File does not start with OPENQASM descriptor")
 
-        if r[0].startswith('include "stdgates.inc";'):
-            r.pop(0)
+        if r[1].startswith('include "stdgates.inc";'):
+            pass
+            # r.pop(0)
         elif strict:
             raise TypeError("File is not importing standard library")  # TODO: remove these pops
 
@@ -85,9 +90,10 @@ class QASMParser:
             if non_clifford:
                 gate_start_index = current_instruction.find(*non_clifford)
                 gate_end_index = current_instruction.find(";")
-                cliffordised_instructions = CliffordInstructionGenerator(
+                generator = CliffordInstructionGenerator(
                     current_instruction[gate_start_index:gate_end_index]
                 )
+                cliffordised_instructions = generator._get_qasm_instructions()
                 if len(current_instruction) == gate_end_index + 1:
                     for ins in cliffordised_instructions:
                         new_circuit.append(current_instruction[:gate_start_index] + ins)
@@ -110,7 +116,11 @@ class QASMParser:
 
         return new_circuit
 
-    def cliffordT_qasm_output(self):
-        qasm_output = ""
-        qasm_output.join(self.generate_cliffordTCircuit())
+    def cliffordT_qasm_output_string(self):
+        space = "\n"
+        qasm_output = space.join(self.generate_cliffordTCircuit())
         return qasm_output
+
+    def generate_cliffordT_qasm_file(self):
+        with open(self.fp, "w") as file:
+            file.write(self.cliffordT_qasm_output_string())

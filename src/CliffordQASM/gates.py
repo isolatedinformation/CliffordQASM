@@ -23,14 +23,14 @@ class SingleQubitGate(AbstractGate):
     """
 
     gate_name: str = None
-    qubit_register: str = None
+    qubit_register: List[str] = None
     gate_args: float = None  # represents the denominator of the angle pi/gate_args
-    num_qubit: int = 1
+    num_qubits: int = 1
 
     def to_qasm(self):
         if self.gate_args is not None:
-            return f"{self.gate_name}({self.gate_args}) {self.qubit_register}"
-        return f"{self.gate_name} {self.qubit_register}"
+            return f"{self.gate_name}({self.gate_args}) {self.qubit_register[0]};"
+        return f"{self.gate_name} {self.qubit_register[0]};"
 
 
 @dataclass
@@ -51,9 +51,9 @@ class TwoQubitGate(AbstractGate):
             for arg in self.gate_args:
                 args.append(f"{arg}, ")
             return (
-                f"{self.gate_name}({args[:-2]}) {self.qubit_register[0]}, {self.qubit_register[1]}"
+                f"{self.gate_name}({args[:-2]}) {self.qubit_register[0]}, {self.qubit_register[1]};"
             )
-        return f"{self.gate_name} {self.qubit_register[0]}, {self.qubit_register[1]}"
+        return f"{self.gate_name} {self.qubit_register[0]}, {self.qubit_register[1]};"
 
 
 @dataclass
@@ -78,4 +78,4 @@ class MultiQubitGate(AbstractGate):
             for arg in self.gate_args:
                 args.append(f"{arg}, ")
             return f"{self.gate_name}({args[:-2]}) {qubits[:-2]}"
-        return f"{self.gate_name} {qubits[:-2]}"
+        return f"{self.gate_name} {qubits[:-2]};"
