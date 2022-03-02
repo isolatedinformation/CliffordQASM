@@ -54,9 +54,7 @@ class QASMParser:
             elif s.find("*") != -1:  # remove multi line comments
                 t = False
             else:
-                t = (
-                    s.strip()
-                )  # .strip() removing the strip operator so as to maintain identantion levels
+                t = s  # .strip()  # .strip() removing the strip operator so as to maintain identantion levels
             if t:
                 r.append(t)
 
@@ -69,55 +67,50 @@ class QASMParser:
         if r[0].startswith('include "stdgates.inc";'):
             r.pop(0)
         elif strict:
-            raise TypeError("File is not importing standard library")
+            raise TypeError("File is not importing standard library")  # TODO: remove these pops
 
-        return r  # TODO: Detemine best data structure to represent this.
+        return r
 
     def generate_cliffordTCircuit(self):
         new_circuit = list()
-        flag = False
-
         index = 0
-        while index < len(self.circuit_string):
 
-            if any(non_cliff in self.circuit_string[index] for non_cliff in GATES_TO_CONVERT):
-                # Condition to process supported gates that can be converted to the Clifford basis
-                new_lines = CliffordInstructionGenerator(self.circuit_string[index])
-                new_circuit.extend(new_lines)
+        while index < len(self.circuit_string):
+            current_instruction = self.circuit_string[index]
+
+            non_clifford = list(
+                filter(lambda nc_gate: nc_gate in current_instruction, GATES_TO_CONVERT)
+            )
+
+            if non_clifford:
+                gate_start_index = current_instruction.find(*non_clifford)
+                gate_end_index = current_instruction.find(";")
+                cliffordised_instructions = CliffordInstructionGenerator(
+                    current_instruction[gate_start_index:gate_end_index]
+                )
+                if len(current_instruction) == gate_end_index + 1:
+                    for ins in cliffordised_instructions:
+                        new_circuit.append(current_instruction[:gate_start_index] + ins)
+                elif (
+                    len(current_instruction) > gate_end_index + 1
+                    and current_instruction[gate_end_index + 1 :].isspace()
+                ):
+                    for ins in cliffordised_instructions:
+                        new_circuit.append(current_instruction[:gate_start_index] + ins)
+                else:
+                    new_circuit.append(current_instruction[:gate_start_index])
+                    for ins in cliffordised_instructions:
+                        new_circuit.append(f"\t{ins}")
+                    new_circuit.append("}")
+
+                index += 1
+            else:
+                new_circuit.append(current_instruction)
                 index += 1
 
-            elif self.circuit_string[index].startswith("gate"):
-                # Parse custom gates and convert gates in the definition to Clifford+T basis
-                new_lines, new_index = self._parse_custom_gate(index)
-                new_circuit.append(self.circuit_string[index])
+        return new_circuit
 
-            elif flag:
-                if "}" in self.circuit_string[index]:
-                    flag = False
-                new_circuit.append(self.circuit_string[index])
-            else:
-                new_circuit.append(self.circuit_string[index])
-
-            # elif any(ignored in line for ignored in ignored_instructions):
-            #     new_circuit.append(line)
-
-            # elif any(line.startswith(cliff) for cliff in is_cliffordT):
-            #     new_circuit.append(line)
-
-    def _parse_custom_gate(self, index):
-        custom_gate_as_clifford = list()
-        while "}" not in self.circuit_string[index]:  # Write string
-            # TODO: get instruction and change it to a multi line gate definition
-            new_lines = CliffordInstructionGenerator(
-                self.circuit_string[index]
-            )  # make statement that generate line for this
-            custom_gate_as_clifford.extend(new_lines)
-            index += 1
-
-
-# string.startswith(gate_name) is not a good check because the control flow statements
-# might make the gates start indented or deep in the string in case of single line for loops
-# the last check in generate_cliffordTCircuit might be useless. Find out what is required.
-# the flag check might also be irrelvant
-# are we also breaking down custom gates to clifford operations
-# would it make more sense loop with an index instead of an iterable.
+    def cliffordT_qasm_output(self):
+        qasm_output = ""
+        qasm_output.join(self.generate_cliffordTCircuit())
+        return qasm_output
