@@ -1,3 +1,4 @@
 .python-version
-.vscode/settings.json
+.vscode*
 __pycache*
+Qiskit_failures.ipynb
