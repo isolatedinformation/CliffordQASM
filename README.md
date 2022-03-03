@@ -47,6 +47,9 @@ parser = QASMParser(filepath= filepath)
 parser.generate_cliffordT_qasm_file() # This will generate new file the name cliffordT_oldname.qasm
 ```
 You can play with `debug/test_clifford.py` with your own `qasm` file. The output will be generated in the folder `cliffordT_qasm_circuits`
+## Flow of the converter
+![image](https://user-images.githubusercontent.com/27089492/156560013-9af50605-f5ed-4586-b0a2-ebe9e94f5648.png)
+
 
 ## Comments on unsupported gates
 The unsupported gates can be broken down into clifford+T rotations, however the parser at this stage would generate absurdly long gate sequences as everything is unrolled when generating the qasm output. One can take advantage of the control flow features in `OPENQasm 3.0` to generate a more succint representation. Nonetheless, this would not change the fundamental constraint that gates sequences generated using `gridsynth` are absurdly long that may go beyond capabilities of current hardware. 
