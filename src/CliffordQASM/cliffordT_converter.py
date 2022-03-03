@@ -16,6 +16,10 @@ from CliffordQASM.constants import (
 
 
 def generate_clifford_T_approximation_from_rz_gate(angle: float) -> str:
+    """
+    Appoximates RZ gate as a sequence of Clifford+T gates
+    Relies on gridsynth
+    """
     n: float = np.pi / angle
     phase_gate_angle: str = f"pi/{n}" if n else f"0"
     command_output = subprocess.check_output(f"gridsynth {phase_gate_angle}", shell=True).decode(
@@ -29,7 +33,7 @@ def generate_clifford_T_approximation_from_rz_gate(angle: float) -> str:
 
 def single_qubit_gate_to_CliffordT(gate: SingleQubitGate) -> List[SingleQubitGate]:
     """
-    Function to convert a Gate to convert to a Clifford Basis
+    Function to convert a Single Qubit Gate to convert to a Clifford Basis
     """
     if not isinstance(gate, SingleQubitGate):
         raise TypeError("Please ensure gate is of type SingleQubitGate")
@@ -64,6 +68,9 @@ def single_qubit_gate_to_CliffordT(gate: SingleQubitGate) -> List[SingleQubitGat
 
 
 def two_qubit_gate_to_CliffordT(gate: TwoQubitGate) -> List[Union[SingleQubitGate, TwoQubitGate]]:
+    """
+    Function to convert two qubit gate to Clifford+T basis
+    """
     if gate.gate_name == "ch":
         new_gates = list()
         for gn, reg_index in CH_TO_CLIFFORDT:
@@ -129,9 +136,7 @@ class CliffordInstructionGenerator:
                 gate_args = float(gate_args_string[gate_args_string.find("/") + 1 :].strip())
                 gate_args = np.pi / gate_args
             else:
-                gate_args = float(
-                    gate_args_string
-                )  # TODO: this can be a potential bug in the future
+                gate_args = float(gate_args_string)  # TODO: potentinal point of failure
         if ")" in instruction:
             registers = instruction[instruction.find(")") + 1 :].strip()
         else:
