@@ -1,4 +1,4 @@
 .python-version
 .vscode*
 __pycache*
-Qiskit_failures.ipynb
+Qiskit_failure.ipynb
