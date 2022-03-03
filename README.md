@@ -15,6 +15,8 @@ For a detailed explanation of the work flow of the QASMParser and gates that are
 2. https://qiskit.org/textbook/ch-gates/more-circuit-identities.html - Qiskit documentation on circuit identities
 3. https://www.mathstat.dal.ca/~selinger/newsynth/ - Exact and approximate synthesis of Quantum Circuits
 4. https://www.nature.com/articles/s41598-018-23764-x.pdf?origin=ppub - Decomposition of controlled Phase gates
+5. https://arxiv.org/pdf/2104.14722.pdf - OpenQASM 3.x spec
+6. https://github.com/Qiskit/openqasm/ - Source for example circuits
 
 # About the QASM Parser
 
