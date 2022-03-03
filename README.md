@@ -24,14 +24,14 @@ This is package intended to take OpenQASM 3.0 circuits and convert them to the C
 ## What does this package not do?
 Right now not all gates are supported to the Clifford+T basis. We only support the standard gates in OpenQASM 3.0 as of now. Even not all the gates in this are supported for conversion to the clifford+t group.(See below for list of supported gates
 ### Supported Gates for Conversion
-The following gates are supported that are converted to the Clifford Group
-`SingleQubitClifford` = {I, X, Y, Z, S, Sdag, H, sqrtX, sqrtXdag}
-`TwoQubitClifford` = {CX,CY,CZ,SWAP}
-`SingleQubitGates` = {rx, ry, rz, phase}
-`TwoQubitGates` = {ch}
-`MultiQubitGates`  = {toffoli}
-These are the standard gates from OpenQASM that are not supported yet. 
-`GatesNotSupported` = {crx, cry, crz, cphase, ccz, cswap, cu}
+The following gates are supported that are converted to the Clifford Group       
+`SingleQubitClifford` = (id, x, y, z, s, sdg, h, sqrtX, sqrtXdg) + (t, tdg)         
+`TwoQubitClifford` = (cx, cy, cz, swap)       
+`SingleQubitGates` = (rx, ry, rz, phase)         
+`TwoQubitGates` = (ch)   
+`MultiQubitGates`  = (toffoli)     
+These are the standard gates from OpenQASM that are not supported yet.      
+`GatesNotSupported` = (crx, cry, crz, cphase, ccz, cswap, cu)
 
 One approach would be to approximate arbitrary gates as  aprroximations of Clifford+T gates. 
 This does not unroll any control flow operators leaving them as it is. If a non-clifford standard gate is encountered, that is converted to a Clifford+T representation.
