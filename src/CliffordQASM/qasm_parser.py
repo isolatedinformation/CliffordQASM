@@ -1,35 +1,6 @@
-from email import generator
 from CliffordQASM.cliffordT_converter import CliffordInstructionGenerator
 
-# Constant for the list of gates supported
-IGNORED_INSTRUCTIONS = ["qubit", "bit", "reset", "barrier", "measure"]
-IS_CLIFFORDT = [
-    "x ",
-    "y ",
-    "z ",
-    "h ",
-    "s ",
-    "sdg ",
-    "t ",
-    "tdg ",
-    "sx ",
-    "cx ",
-    "cy ",
-    "cz ",
-    "swap ",
-]
-GATES_TO_CONVERT = ["rx(", "ry(", "rz(", "ccx "]
-GATES_NOT_SUPPORTED = [
-    "p(",
-    "U",  # can be broken down into Clifford Gates
-    "ch",  # not in CLifford
-    "cswap",  # not in Clifford
-    "cu",
-    "crx",
-    "cry",
-    "crz",
-    "cphase",  # Controlled phase gate
-]
+GATES_TO_CONVERT = ["rx(", "ry(", "rz(", "p(", "ccx ", "ch"]
 
 
 class QASMParser:
@@ -51,28 +22,20 @@ class QASMParser:
         # remove comments
         for s in lines:
             if s.find("//") != -1:
-                t = s[
-                    0 : s.find("//")
-                ]  # .strip() removing the strip operator so as to maintain identantion levels
+                t = s[0 : s.find("//")]
             elif s.find("*") != -1:  # remove multi line comments
                 t = False
             else:
-                t = s  # .strip()  # .strip() removing the strip operator so as to maintain identantion levels
+                t = s
             if t:
                 r.append(t)
 
         print(r[0])
-        if r[0].startswith("OPENQASM"):
-            pass
-            # r.pop(0)
-        elif strict:
+        if not r[0].startswith("OPENQASM") and strict:
             raise TypeError("File does not start with OPENQASM descriptor")
 
-        if r[1].startswith('include "stdgates.inc";'):
-            pass
-            # r.pop(0)
-        elif strict:
-            raise TypeError("File is not importing standard library")  # TODO: remove these pops
+        if not r[1].startswith('include "stdgates.inc";') and strict:
+            raise TypeError("File is not importing standard library")
 
         return r
 

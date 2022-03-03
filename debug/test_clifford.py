@@ -1,6 +1,6 @@
 from CliffordQASM.qasm_parser import QASMParser
 
-filepath = "qasm_circuits/adder.qasm"
+filepath = "qasm_circuits/scqec.qasm"
 
 parser = QASMParser(filepath=filepath)
 

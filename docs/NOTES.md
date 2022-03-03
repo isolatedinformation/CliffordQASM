@@ -14,11 +14,11 @@ The basis set considered here is the following:
 `SingleQubitClifford` = {I, X, Y, Z, S, Sdag, H, sqrtX, sqrtXdag}
 `TwoQubitClifford` = {CX,CY,CZ,SWAP}
 
-### What are the standard gates that have support to be converted to the Clifford+T group?
+### What are the standard gates that need to be converted to the Clifford+T group?
 The following gates are supported that are converted to the Clifford Group
-`SingleQubitGates` = {RX, RY, RZ}
-`TwoQubitGates` = {CRX, CRY, CRZ}
-`MultiQubitGates`  = {Toffoli}
+`SingleQubitGates` = {rx, ry, rz}
+`TwoQubitGates` = {}
+`MultiQubitGates`  = {toffoli, ccz}
 These are the standard gates from OpenQASM that are not supported yet. 
-`GatesNotSupported` = {CH, CSWAP, CU}
+`GatesNotSupported` = {ch, cswap, cu}
 

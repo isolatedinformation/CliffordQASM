@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+import numpy as np
 
 # TODO: Strength of truncation of string while using f-strings
 # Q: Would it better to use Fractions instead of floats for arbitrary precision?
@@ -29,7 +30,7 @@ class SingleQubitGate(AbstractGate):
 
     def to_qasm(self):
         if self.gate_args is not None:
-            return f"{self.gate_name}({self.gate_args}) {self.qubit_register[0]};"
+            return f"{self.gate_name}(pi/{np.pi/self.gate_args}) {self.qubit_register[0]};"
         return f"{self.gate_name} {self.qubit_register[0]};"
 
 

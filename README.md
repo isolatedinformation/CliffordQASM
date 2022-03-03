@@ -1,9 +1,9 @@
 # CliffordT conversion of OpenQASM 3.0 Circuits
 Developed as a part of the submission to the QOSF March Cohort application.   
-Install package using `pip install -e .` after cloning the repo locally
-### TODO:
-- [x] Figure out setup tools
-- [ ] Choose what gates to convert to
+Install package using `pip install -e .` after cloning the repo locally.
+
+For a detailed explanation of the work flow of the QASMParser and gates that are supported for conversion to Clifford+T circuits, take a look at [this file](docs/NOTES.md)
+
 - [ ] Figure out what to do with phase gate that is equivalent to the RZ Gates.
 
 ### Dependencies
