@@ -8,7 +8,7 @@ For a detailed explanation of the work flow of the QASMParser and gates that are
 
 
 ### Dependencies
-1. `newsynth` -- Haskell Package to convert Rz rotation to a sequence of H,S and T gates
+1. `newsynth` -- Haskell Package to convert Rz rotation to a sequence of H, S and T gates
 
 ### References
 1. https://threeplusone.com/pubs/on_gates.pdf - Good resource on Quantum Gates
