@@ -11,10 +11,10 @@ For a detailed explanation of the work flow of the QASMParser and gates that are
 1. `newsynth` -- Haskell Package to convert Rz rotation to a sequence of H,S and T gates
 
 ### References
-- https://threeplusone.com/pubs/on_gates.pdf - Good resource on Quantum Gates
-- https://qiskit.org/textbook/ch-gates/more-circuit-identities.html - Qiskit documentation on circuit identities
-- https://www.mathstat.dal.ca/~selinger/newsynth/ - Exact and approximate synthesis of Quantum Circuits
-- https://www.nature.com/articles/s41598-018-23764-x.pdf?origin=ppub - Decomposition of controlled Phase gates
+1. https://threeplusone.com/pubs/on_gates.pdf - Good resource on Quantum Gates
+2. https://qiskit.org/textbook/ch-gates/more-circuit-identities.html - Qiskit documentation on circuit identities
+3. https://www.mathstat.dal.ca/~selinger/newsynth/ - Exact and approximate synthesis of Quantum Circuits
+4. https://www.nature.com/articles/s41598-018-23764-x.pdf?origin=ppub - Decomposition of controlled Phase gates
 
 # About the QASM Parser
 
@@ -45,3 +45,8 @@ parser = QASMParser(filepath= filepath)
 parser.generate_cliffordT_qasm_file() # This will generate new file the name cliffordT_oldname.qasm
 ```
 You can play with `debug/test_clifford.py` with your own `qasm` file. The output will be generated in the folder `cliffordT_qasm_circuits`
+
+## Comments on unsupported gates
+The unsupported gates can be broken down into clifford+T rotations, however the parser at this stage would generate absurdly long gate sequences as everything is unrolled when generating the qasm output. One can take advantage of the control flow features in `OPENQasm 3.0` to generate a more succint representation. Nonetheless, this would not change the fundamental constraint that gates sequences generated using `gridsynth` are absurdly long that may go beyond capabilities of current hardware. 
+
+For instance, in reference 4, one can find a decomposition of controlled-RZ gate, which is recursive in nature. This can be converted to a recursive fucntion in `OPENQasm 3.0`. This would ideally be the next step in the development of this package, if continued, changing to a transpiler from a mere parser. 
